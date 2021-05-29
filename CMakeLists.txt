@@ -8,9 +8,9 @@ file(GLOB src
 )
 
 add_library(${PROJECT_NAME} STATIC ${src})
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wextra -pedantic)
 
 if (UNIX)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wextra -pedantic)
     target_link_libraries(${PROJECT_NAME} INTERFACE pthread rt ${CMAKE_DL_LIBS})
 elseif (WIN32)
     target_link_libraries(${PROJECT_NAME} INTERFACE Kernel32)
