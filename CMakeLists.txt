@@ -7,13 +7,13 @@ project(guardpp LANGUAGES CXX VERSION 2.0)
 
 add_library(${PROJECT_NAME})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wextra -pedantic)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
 
 if (WIN32)
     target_sources(${PROJECT_NAME} PRIVATE "src/guard.windows.cpp")
 else()
     target_sources(${PROJECT_NAME} PRIVATE "src/guard.linux.cpp")
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wextra -pedantic)
 endif()
 
 # --------------------------------------------------------------------------------------------------------
@@ -51,6 +51,13 @@ if (guardpp_tests)
 
     add_executable(${PROJECT_NAME}_test "tests/test.cpp")
     add_executable(${PROJECT_NAME}_test_exe "tests/main.cpp")
+
     target_link_libraries(${PROJECT_NAME}_test_exe PRIVATE guardpp)
     target_link_libraries(${PROJECT_NAME}_test PRIVATE guardpp tiny-process-library)
+
+    target_compile_features(${PROJECT_NAME}_test PRIVATE cxx_std_17)
+    set_target_properties(${PROJECT_NAME}_test PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
+    
+    target_compile_features(${PROJECT_NAME}_test_exe PRIVATE cxx_std_17)
+    set_target_properties(${PROJECT_NAME}_test_exe PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
 endif()
