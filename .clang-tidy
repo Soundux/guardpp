@@ -53,4 +53,6 @@ Checks: "*,\
   -readability-isolate-declaration,\
   -google-default-arguments,\
   -altera-*,\
-  -performance-no-int-to-ptr"
+  -performance-no-int-to-ptr,\
+  -readability-named-parameter,\
+  -bugprone-easily-swappable-parameters"

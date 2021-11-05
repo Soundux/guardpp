@@ -1,41 +1,93 @@
-## guardpp
-A cross-platform C++17 library that can restrict your application to a single instance.
 
-## Compatibility
-| Platform | Mechanism           | Dependencies |
-| -------- | ------------------- | ------------ |
-| Windows  | Shared Memory Mutex | pthread      |
-| Linux    | Shared Memory Mutex | WinAPI       |
+<h1 align="center"> 💂 guardpp </h1>
+<p align="center">
+A C++17 library for single-instance applications
+</p>
 
-## Usage
+<p align="center">
+    <a href="https://github.com/Soundux/guardpp/actions">
+        <img src="https://img.shields.io/github/workflow/status/Soundux/guardpp/Test%20on%20Linux?label=Linux%20Build&style=flat-square" alt="Linux Build" />
+    </a>
+    <a href="https://github.com/Soundux/guardpp/actions">
+        <img src="https://img.shields.io/github/workflow/status/Soundux/guardpp/Test%20on%20Windows?label=Windows%20Build&style=flat-square" alt="Windows Build" />
+    </a>
+    <a href="https://github.com/Soundux/guardpp/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/Soundux/guardpp.svg?style=flat-square" alt="License" />
+    </a>
+</p>
 
-- Add the library to your project
-  - ```cmake
-    add_subdirectory(/path/to/guardpp)
-    link_libraries(guard)
+---
+
+## ⚙️ Configuration
+### Tests
+```cmake
+set(guardpp_tests OFF)
+```
+> If set to `ON`, guardpp will build a test executable.
+
+
+## 📎 Installation
+- FetchContent
+    ```cmake
+    include(FetchContent)
+    FetchContent_Declare(lockpp GIT_REPOSITORY "https://github.com/Soundux/guardpp")
+
+    FetchContent_MakeAvailable(guardpp)
+    target_link_libraries(<YourLibrary> guardpp)
     ```
-## Features
-- Tiny & Easy to use
-- Prevents issues when previous process crashed
+- Git Submodule
+    ```bash
+    git submodule add "https://github.com/Soundux/guardpp"
+    ```
+    ```cmake
+    # Somewhere in your CMakeLists.txt
+    add_subdirectory("<path_to_guardpp>")
+    target_link_libraries(<YourLibrary> guardpp)
+    ```
 
-## Usage
+## 📔 Usage
+
+### Example
 ```cpp
 #include <guard.hpp>
 #include <iostream>
 
 int main()
 {
-    Instance::Guard instanceGuard("test");
+    guardpp::guard instance_guard("guardpp");
 
-    if (instanceGuard.isAnotherRunning())
+    auto other_instance = instance_guard.other_instance();
+    
+    if (other_instance)
     {
-        std::cerr << "Only one instance allowed" << std::endl;
-        return 1;
+        if (other_instance.value())
+        {
+            std::cout << "Another instance is running!" << std::endl;
+        }
+        else
+        {
+            std::cout << "No other instance is running!" << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << other_instance.error() << std::endl;
     }
 
-    //...
-
-    // Shared Memory Mutex is free'd upon destruction of the Guard instance.
-    return 0;
+    // You can also take-over an existing lock by calling instance_guard.reset(); 
 }
 ```
+
+## 📚 Dependencies
+
+- [`expected`](https://github.com/TartanLlama/expected)
+- [`tiny-process-library`](https://gitlab.com/eidheim/tiny-process-library) _(For tests only!)_
+
+## ℹ️ Remarks
+
+- `guard::reset()` is unimplemented on Windows. This is because on Windows a mutex can only be deleted by closing all existing handles to the mutex, we can not do this because we can't access the handles created by other processes.¹
+
+- The linux implementation now uses file based locks instead of shared memory / semaphores, because they seem to be more robust.²
+
+> ¹ https://stackoverflow.com/questions/9072570/how-can-i-delete-a-mutex-and-semaphore-in-win32-api  
+> ² http://charette.no-ip.com:81/programming/2010-01-13_PosixSemaphores/index.html
