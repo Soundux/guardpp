@@ -40,7 +40,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC tl::expected)
 # Build a test executable
 # --------------------------------------------------------------------------------------------------------
 
-option(guardpp_tests "Build tests" ON)
+option(guardpp_tests "Build tests" OFF)
 
 if (guardpp_tests)
     message(STATUS "Building guardpp tests")
