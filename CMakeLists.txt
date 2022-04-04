@@ -13,7 +13,10 @@ if (WIN32)
     target_sources(${PROJECT_NAME} PRIVATE "src/guard.windows.cpp")
 else()
     target_sources(${PROJECT_NAME} PRIVATE "src/guard.linux.cpp")
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wextra -pedantic)
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -Wextra -pedantic)
+    endif()
 endif()
 
 # --------------------------------------------------------------------------------------------------------
